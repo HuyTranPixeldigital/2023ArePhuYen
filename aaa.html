@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(120deg, #f093fb, #f5576c);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .profile-container {
+            max-width: 400px;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-container::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            z-index: -1;
+            background-image: url('https://source.unsplash.com/random');
+            background-size: cover;
+            width: 200%;
+            height: 200%;
+            transform: rotate(-10deg);
+            opacity: 0.2;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-header h2 {
+            margin: 0;
+            color: #333;
+        }
+
+        .profile-header p {
+            color: #777;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .profile-details {
+            border-top: 1px solid #eee;
+            margin-top: 20px;
+            padding-top: 20px;
+        }
+
+        .profile-details h3 {
+            color: #444;
+        }
+
+        .skills {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .skills li {
+            width: 45%;
+            margin-bottom: 10px;
+            background-color: #f5576c;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .skills li:hover {
+            background-color: #f093fb;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="profile-container">
+        <div class="profile-header">
+            <h2>John Doe</h2>
+            <p>john.doe@example.com</p>
+            <p>+1 (123) 456-7890</p>
+        </div>
+        <div class="profile-details">
+            <h3>Skills:</h3>
+            <ul class="skills">
+                <li>HTML</li>
+                <li>CSS</li>
+                <li>JavaScript</li>
+                <li>React</li>
+                <li>Node.js</li>
+                <li>MySQL</li>
+            </ul>
+        </div>
+    </div>
+</body>
+
+</html>
