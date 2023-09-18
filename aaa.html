@@ -4,113 +4,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(120deg, #f093fb, #f5576c);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-
-        .profile-container {
-            max-width: 400px;
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
-            z-index: 1;
-        }
-
-        .profile-container::before {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            z-index: -1;
-            background-image: url('https://source.unsplash.com/random');
-            background-size: cover;
-            width: 200%;
-            height: 200%;
-            transform: rotate(-10deg);
-            opacity: 0.2;
-        }
-
-        .profile-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .profile-header h2 {
-            margin: 0;
-            color: #333;
-        }
-
-        .profile-header p {
-            color: #777;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
-        .profile-details {
-            border-top: 1px solid #eee;
-            margin-top: 20px;
-            padding-top: 20px;
-        }
-
-        .profile-details h3 {
-            color: #444;
-        }
-
-        .skills {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .skills li {
-            width: 45%;
-            margin-bottom: 10px;
-            background-color: #f5576c;
-            color: #fff;
-            padding: 5px 10px;
-            border-radius: 5px;
-            text-align: center;
-            transition: all 0.3s;
-        }
-
-        .skills li:hover {
-            background-color: #f093fb;
-        }
-    </style>
+    <title>Trần Quang Huy</title>
+    <link rel="stylesheet" href="style.css" >
 </head>
 
 <body>
     <div class="profile-container">
-        <div class="profile-header">
-            <h2>John Doe</h2>
-            <p>john.doe@example.com</p>
-            <p>+1 (123) 456-7890</p>
-        </div>
+		<div class="profile-header">
+			<img src="https://southeastasia1-mediap.svc.ms/transform/thumbnail?provider=spo&inputFormat=jpg&cs=fFNQTw&docid=https%3A%2F%2Fhylecuoicung-my.sharepoint.com%3A443%2F_api%2Fv2.0%2Fdrives%2Fb!wWU1cP41qEu-d3IW4l2EyzKW-3puc_lLpgcPPamkyjIu6g-5_2tTRqA-itSdcVJQ%2Fitems%2F01F46ZXIBT2TYPECKFB5HYNT2MMKHWSXRS%3Fversion%3DPublished&access_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvaHlsZWN1b2ljdW5nLW15LnNoYXJlcG9pbnQuY29tQDJkMjEzN2ViLTNjNjMtNDNhMi1hZWY0LWIwYzQxMTZiMWEwMCIsImlzcyI6IjAwMDAwMDAzLTAwMDAtMGZmMS1jZTAwLTAwMDAwMDAwMDAwMCIsIm5iZiI6IjE2OTUwMTY4MDAiLCJleHAiOiIxNjk1MDM4NDAwIiwiZW5kcG9pbnR1cmwiOiJwRzZURC9NcDRVU3dGSXpPVjV2Skp2NGVCZzhjQWVXeGpwZGsxb1cyRXc0PSIsImVuZHBvaW50dXJsTGVuZ3RoIjoiMTIyIiwiaXNsb29wYmFjayI6IlRydWUiLCJ2ZXIiOiJoYXNoZWRwcm9vZnRva2VuIiwic2l0ZWlkIjoiTnpBek5UWTFZekV0TXpWbVpTMDBZbUU0TFdKbE56Y3ROekl4Tm1VeU5XUTROR05pIiwibmFtZWlkIjoiMCMuZnxtZW1iZXJzaGlwfHVybiUzYXNwbyUzYWFub24jNTM3NjdjNjEwZjJmYzNjZTQ1NzMwYmRjYTI4NjhlNDY0ZTNkMDcxN2JmNGY1NTMwYWRlZDcxNTRhNjk4ZmQ3MyIsIm5paSI6Im1pY3Jvc29mdC5zaGFyZXBvaW50IiwiaXN1c2VyIjoidHJ1ZSIsImNhY2hla2V5IjoiMGguZnxtZW1iZXJzaGlwfHVybiUzYXNwbyUzYWFub24jNTM3NjdjNjEwZjJmYzNjZTQ1NzMwYmRjYTI4NjhlNDY0ZTNkMDcxN2JmNGY1NTMwYWRlZDcxNTRhNjk4ZmQ3MyIsInNoYXJpbmdpZCI6IlI0TEJLTVlIR0UrQWNYY2x2djhwcEEiLCJ0dCI6IjAiLCJpcGFkZHIiOiIyNDAyOjgwMDo2M2I4OmMzM2M6NzE4ZjoyNGMyOjk3MGI6MjdhZCJ9.G1pri7_305QjbVc_WMqkkwgo73LPwFNMVk_bCvZO6iY&cTag=%22c%3A%7BF2F0D433-4509-4F0F-86CF-4C628F695E32%7D%2C2%22&encodeFailures=1&width=166&height=221&srcWidth=1536&srcHeight=2048" alt="John Doe" style="width: 150px; height: 150px; border-radius: 50%; margin-bottom: 10px;">
+			<h2>Trần Quang Huy</h2>
+			<p>hylecuoicung@gmail.com</p>
+			<p>+84 - 935.451.686</p>
+		</div>
         <div class="profile-details">
-            <h3>Skills:</h3>
+            <h3> Khóa Bổi Dưỡng Sinh Hoạt 2023:</h3>
             <ul class="skills">
-                <li>HTML</li>
-                <li>CSS</li>
-                <li>JavaScript</li>
-                <li>React</li>
-                <li>Node.js</li>
-                <li>MySQL</li>
+                <li>Đội Trưởng</li>
+                <li>Gánh Team</li>
             </ul>
         </div>
+		<div class="skills">
+			<h3>Chuyên Cần</h3>
+			<!-- Kỹ năng 1 -->
+			<div class="skill-container">
+				<div class="skill-bar skill-level" style="width: 99%;">99%</div>
+			</div>
+			<h3>Chém Gió</h3>
+			<div class="skill-container">
+				<div class="skill-bar skill-level" style="width: 75%;">75%</div>
+			</div>
+			<!-- Thêm kỹ năng khác ở đây... -->
+		</div>
+
     </div>
 </body>
 
