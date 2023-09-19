@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner and Uploader</title>
+</head>
+<body>
+    <video id="qr-video" autoplay></video>
+    <canvas id="qr-canvas" style="display: none;"></canvas>
+    <div id="result"></div>
+    <button id="download-button" style="display: none;">Upload QR Data to GitHub</button>
+
+    <script src="https://cdn.rawgit.com/cozmo/jsQR/master/dist/jsQR.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        const video = document.getElementById('qr-video');
+        const canvas = document.getElementById('qr-canvas');
+        const resultDiv = document.getElementById('result');
+        const downloadButton = document.getElementById('download-button');
+
+        let qrData = null;
+
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+            .then(function (stream) {
+                video.srcObject = stream;
+            })
+            .catch(function (error) {
+                console.error('Error accessing the camera:', error);
+            });
+
+        function extractURLFromQRCode(data) {
+            const urlPattern = /(https?:\/\/[^\s]+)/;
+            const matches = data.match(urlPattern);
+            if (matches && matches.length > 0) {
+                return matches[0];
+            }
+            return null;
+        }
+
+        function tick() {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+            if (code && code.data !== qrData) {
+                qrData = code.data;
+                const fullURL = extractURLFromQRCode(qrData);
+                if (fullURL) {
+                    resultDiv.innerHTML = 'Full URL Detected: <a href="' + fullURL + '" target="_blank">' + fullURL + '</a>';
+                    
+                    // Hiển thị nút tải lên
+                    downloadButton.style.display = 'block';
+                } else {
+                    resultDiv.innerHTML = 'QR Code Detected: ' + qrData;
+                }
+            }
+
+            requestAnimationFrame(tick);
+        }
+
+        video.addEventListener('loadedmetadata', function () {
+            canvas.style.width = video.width + 'px';
+            canvas.style.height = video.height + 'px';
+            requestAnimationFrame(tick);
+        });
+
+        downloadButton.addEventListener('click', function () {
+            if (qrData) {
+                // Tạo một Blob từ dữ liệu QR code
+                const blob = new Blob([qrData], { type: 'text/plain' });
+
+                // Tải lên GitHub bằng Axios
+                const username = 'HuyTranPixeldigital';
+                const repo = '2023ArePhuYen';
+                const token = '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';
+                const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents/qrcode_data.txt`;
+                
+                axios.get(apiUrl, {
+                    headers: {
+                        Authorization: `token ${token}`,
+                    },
+                })
+                .then(response => {
+                    // Lấy SHA hiện tại
+                    const sha = response.data.sha;
+                    
+                    // Tạo một commit mới
+                    axios.put(apiUrl, {
+                        message: 'Update QR code data',
+                        content: btoa(qrData), // Mã hóa dữ liệu QR code thành base64
+                        sha: sha,
+                    }, {
+                        headers: {
+                            Authorization: `token ${token}`,
+                        },
+                    })
+                    .then(response => {
+                        console.log('Commit created:', response.data);
+                        alert('QR code data uploaded successfully!');
+                    })
+                    .catch(error => {
+                        console.error('Error creating commit:', error);
+                        alert('Error uploading QR code data!');
+                    });
+                })
+                .catch(error => {
+                    console.error('Error getting file data:', error);
+                    alert('Error getting file data!');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
