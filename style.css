@@ -103,3 +103,7 @@ body {
     width: 0;
     background-color: #4CAF50; /* Màu của progress bar, bạn có thể thay đổi */
 }
+.skills li a {
+    text-decoration: none; /* Loại bỏ đường gạch chân */
+    color: #fff; /* Đặt màu chữ của liên kết */
+}
