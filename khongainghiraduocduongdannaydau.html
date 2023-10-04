@@ -29,11 +29,6 @@
     let toggleButton = document.getElementById("toggleButton");
     let facingMode = "environment"; // default to rear camera
 
-	function playBeep() {
-		const beepSound = document.getElementById('beep');
-		beepSound.play();
-	}
-
     function setupCamera() {
         navigator.mediaDevices.getUserMedia({ video: { facingMode: facingMode } }).then(function(stream) {
             video.srcObject = stream;
@@ -52,8 +47,8 @@
         let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         let code = jsQR(imageData.data, canvas.width, canvas.height);
         if (code) {
-            document.getElementById("output").textContent = code.data;
-			playBeep();
+            document.getElementById("output").textContent = code.data;	
+			alert('cập nhật thành công');
             // You can do more here, e.g., navigating to the URL in the QR code
         }
     }
@@ -63,7 +58,6 @@
     }
 
     toggleButton.addEventListener("click", function() {
-		playBeep();
         if (video.srcObject) {
             video.srcObject.getTracks().forEach(track => track.stop());
             video.srcObject = null;
