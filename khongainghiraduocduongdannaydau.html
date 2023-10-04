@@ -6,6 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Camera Access and QR Code Reader</title>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.2.0/dist/jsQR.js"></script>
+    <style>
+        #video {
+            transform: scale(1.5);
+            transform-origin: center center;
+        }
+    </style>
 </head>
 
 <body>
@@ -20,13 +26,12 @@
     let facingMode = "environment"; // default to rear camera
 
     function setupCamera() {
-        navigator.mediaDevices.getUserMedia({
-			video: {
-				facingMode: "environment",
-				width: { ideal: 1280 },  // HD resolution
-				height: { ideal: 720 }
-			}
-		})
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: facingMode } }).then(function(stream) {
+            video.srcObject = stream;
+            video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+            video.play();
+            startScanning(); // Start scanning once the camera is setup
+        });
     }
 
     function scanQR() {
