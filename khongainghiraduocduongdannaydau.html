@@ -5,39 +5,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Scanner</title>
+    <script src="https://cdn.rawgit.com/mebjas/html5-qrcode/453f00a3/dist/html5-qrcode.min.js"></script>
     <style>
-        #preview {
+        #reader {
             width: 100%;
             height: 300px;
-            background-color: #ccc;
         }
     </style>
 </head>
 
 <body>
-    <video id="preview"></video>
-
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/instascan@1.0.0/build/instascan.min.js"></script>
+    <div id="reader"></div>
+    <button onclick="scanQRCode()">Scan QR Code</button>
     <script>
-        let scanner = new Instascan.Scanner({
-            video: document.getElementById('preview'),
-            scanPeriod: 5, // giữa mỗi lần quét
-            mirror: false
-        });
-        scanner.addListener('scan', function (content) {
-            alert('Scanned: ' + content);
-        });
-
-        Instascan.Camera.getCameras().then(function (cameras) {
-            if (cameras.length > 0) {
-                scanner.start(cameras[0]); // Khởi động camera đầu tiên
-            } else {
-                console.error('No cameras found.');
-            }
-        }).catch(function (e) {
-            console.error(e);
-        });
-
+        function scanQRCode() {
+            const html5QrCode = new Html5Qrcode("reader");
+            html5QrCode.start(
+                { facingMode: "environment" }, // Sử dụng camera sau
+                {
+                    fps: 10,    // Chụp 10 khung hình mỗi giây
+                    qrbox: 250  // Kích thước hộp quét là 250x250 pixel
+                },
+                qrCodeMessage => {
+                    // Do something when code is read
+                    alert(`QR Code detected: ${qrCodeMessage}`);
+                    html5QrCode.stop();  // Dừng camera sau khi đọc QR code thành công
+                },
+                errorMessage => {
+                    // Do something on error
+                    console.error(`QR Code error: ${errorMessage}`);
+                }
+            ).catch(err => {
+                console.error(`Unable to start scanning, error: ${err}`);
+            });
+        }
     </script>
 </body>
 
