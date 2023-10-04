@@ -4,16 +4,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Scanner</title>
-    <link rel="stylesheet" href="http://hylecuoicung.com/styles.css">
+    <title>Camera Access and QR Code Reader</title>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/instascan@1.0.0/build/instascan.min.js"></script>
 </head>
 
 <body>
-    <button id="startScan">Bắt đầu quét</button>
-    <video id="preview"></video>
 
-    <script src="http://hylecuoicung.com/scripts.js"></script>
+<video id="video" width="300" height="200"></video>
+<button id="toggleButton">Toggle Camera</button>
+<div id="output"></div>
+
+<script>
+    let video = document.getElementById("video");
+    let toggleButton = document.getElementById("toggleButton");
+    let facingMode = "environment"; // default to rear camera
+
+    function setupCamera() {
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: facingMode } }).then(function(stream) {
+            video.srcObject = stream;
+            video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+            video.play();
+        });
+    }
+
+    function scanQR() {
+        let canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        let ctx = canvas.getContext("2d");
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        let code = jsQR(imageData.data, canvas.width, canvas.height);
+        if (code) {
+            document.getElementById("output").textContent = code.data;
+            // You can do more here, e.g., navigating to the URL in the QR code
+        }
+    }
+
+    toggleButton.addEventListener("click", function() {
+        if (video.srcObject) {
+            video.srcObject.getTracks().forEach(track => track.stop());
+            video.srcObject = null;
+        } else {
+            setupCamera();
+        }
+    });
+
+    video.addEventListener("click", function() {
+        scanQR();
+    });
+
+    // Start the camera initially
+    setupCamera();
+
+</script>
+
 </body>
 
 </html>
