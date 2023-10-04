@@ -17,10 +17,10 @@
 <body>
 
 <video id="video" width="300" height="200"></video>
-<audio id="beep" src="bell.mp3" preload="auto"></audio>
 
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 <button id="toggleButton">Toggle Camera</button>
+<div id="notification"></div>
 
 <div id="output"></div>
 
@@ -50,7 +50,10 @@
         if (code && code.data !== lastScannedData) {
 			lastScannedData = code.data;
             document.getElementById("output").textContent = code.data;	
-			alert('cập nhật thành công');
+			document.getElementById("notification").textContent = 'Cập nhật thành công!';
+			setTimeout(() => {
+				document.getElementById("notification").textContent = '';
+			}, 2000);
             // You can do more here, e.g., navigating to the URL in the QR code
         }
     }
