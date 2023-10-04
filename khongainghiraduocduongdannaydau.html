@@ -17,6 +17,8 @@
 <body>
 
 <video id="video" width="300" height="200"></video>
+<audio id="beep" src="bell.mp3" preload="auto"></audio>
+
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 <button id="toggleButton">Toggle Camera</button>
 
@@ -27,17 +29,9 @@
     let toggleButton = document.getElementById("toggleButton");
     let facingMode = "environment"; // default to rear camera
 
-	function beep() {
-		const context = new AudioContext();
-		const oscillator = context.createOscillator();
-		const contextGain = context.createGain();
-
-		oscillator.type = 'square';
-		oscillator.frequency.setValueAtTime(440, context.currentTime); // 440Hz là tần số của nốt A
-		oscillator.connect(contextGain);
-		contextGain.connect(context.destination);
-		oscillator.start();
-		oscillator.stop(context.currentTime + 0.1); // Tiếng bíp kéo dài 0.1 giây
+	function playBeep() {
+		const beepSound = document.getElementById('beep');
+		beepSound.play();
 	}
 
     function setupCamera() {
@@ -59,7 +53,7 @@
         let code = jsQR(imageData.data, canvas.width, canvas.height);
         if (code) {
             document.getElementById("output").textContent = code.data;
-			beep();
+			playBeep();
             // You can do more here, e.g., navigating to the URL in the QR code
         }
     }
@@ -69,6 +63,7 @@
     }
 
     toggleButton.addEventListener("click", function() {
+		playBeep();
         if (video.srcObject) {
             video.srcObject.getTracks().forEach(track => track.stop());
             video.srcObject = null;
