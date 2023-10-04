@@ -5,6 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Scanner</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.3.1/jsQR.min.js"></script>
+	<style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        video {
+            width: 100%;
+            max-width: 500px; /* Bạn có thể thay đổi kích thước tối đa tùy ý */
+            border: 1px solid #ccc;
+        }
+
+        button {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
 
@@ -22,26 +42,39 @@
     const output = document.getElementById('output');
 
     async function startCamera() {
-        try {
-            if (video.srcObject) {
-                video.srcObject.getTracks().forEach(track => track.stop());
-            }
-            const constraints = {
-                video: {
-                    facingMode: 'environment'
-                }
-            };
+		const videoElement = document.getElementById("video");
+		const outputElement = document.getElementById("output");
 
-            const stream = await navigator.mediaDevices.getUserMedia(constraints);
-            video.srcObject = stream;
-            video.play();
+		// Try to get user media (camera stream)
+		try {
+			const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+			videoElement.srcObject = stream;
+			videoElement.play();
 
-            // Bắt đầu quét QR code từ video
-            scanQRCode();
-        } catch (error) {
-            console.error("Có lỗi xảy ra:", error);
-        }
-    }
+			// Start scanning the video feed for QR codes
+			videoElement.onplay = function() {
+				const canvas = document.createElement("canvas");
+				const context = canvas.getContext("2d");
+				function scanForQRCode() {
+					context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+					const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+					const code = jsQR(imageData.data, imageData.width, imageData.height, {
+						inversionAttempts: "dontInvert",
+					});
+					if (code) {
+						outputElement.textContent = code.data;
+					} else {
+						requestAnimationFrame(scanForQRCode);
+					}
+				}
+				scanForQRCode();
+			};
+		} catch (err) {
+			console.error("Error accessing camera:", err);
+			alert("Không thể truy cập camera. Hãy đảm bảo bạn đã cấp quyền truy cập và trang web này chạy trên HTTPS.");
+		}
+	}
+
 
     function scanQRCode() {
         const canvas = document.createElement('canvas');
