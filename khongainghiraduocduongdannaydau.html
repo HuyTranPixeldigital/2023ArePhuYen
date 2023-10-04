@@ -25,6 +25,7 @@
 <div id="output"></div>
 
 <script>
+	let lastScannedData = null;
     let video = document.getElementById("video");
     let toggleButton = document.getElementById("toggleButton");
     let facingMode = "environment"; // default to rear camera
@@ -46,7 +47,8 @@
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         let code = jsQR(imageData.data, canvas.width, canvas.height);
-        if (code) {
+        if (code && code.data !== lastScannedData) {
+			lastScannedData = code.data;
             document.getElementById("output").textContent = code.data;	
 			alert('cập nhật thành công');
             // You can do more here, e.g., navigating to the URL in the QR code
