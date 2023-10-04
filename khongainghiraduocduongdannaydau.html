@@ -4,46 +4,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Scanner</title>
-    <style>
-        #preview {
-            width: 100%;
-            height: 300px;
-            background-color: #ccc;
-        }
-    </style>
+    <title>Camera Access and QR Code Reader</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.2.0/dist/jsQR.js"></script>
 </head>
 
 <body>
-    <video id="preview"></video>
-    <button id="scanQR">Quét QR Code</button>
 
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/instascan@1.0.0/build/instascan.min.js"></script>
-    <script>
-        let scanner = new Instascan.Scanner({
-            video: document.getElementById('preview'),
-            scanPeriod: 5, // giữa mỗi lần quét
-            mirror: false
-        });
-        scanner.addListener('scan', function (content) {
-            alert('Scanned: ' + content);
-        });
+<video id="video" width="300" height="200"></video>
+<button id="toggleButton">Toggle Camera</button>
+<div id="output"></div>
 
-        Instascan.Camera.getCameras().then(function (cameras) {
-            if (cameras.length > 0) {
-                scanner.start(cameras[1]); // Mở camera sau nếu có
-            } else {
-                console.error('No cameras found.');
-            }
-        }).catch(function (e) {
-            console.error(e);
-        });
+<script>
+    let video = document.getElementById("video");
+    let toggleButton = document.getElementById("toggleButton");
+    let facingMode = "environment"; // default to rear camera
 
-        document.getElementById("scanQR").addEventListener("click", function(){
-            scanner.scan();
+    function setupCamera() {
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: facingMode } }).then(function(stream) {
+            video.srcObject = stream;
+            video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+            video.play();
         });
+    }
 
-    </script>
+    function scanQR() {
+        let canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        let ctx = canvas.getContext("2d");
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        let code = jsQR(imageData.data, canvas.width, canvas.height);
+        if (code) {
+            document.getElementById("output").textContent = code.data;
+            // You can do more here, e.g., navigating to the URL in the QR code
+        }
+    }
+
+    toggleButton.addEventListener("click", function() {
+        if (video.srcObject) {
+            video.srcObject.getTracks().forEach(track => track.stop());
+            video.srcObject = null;
+        } else {
+            setupCamera();
+        }
+    });
+
+    video.addEventListener("click", function() {
+        scanQR();
+    });
+
+    // Start the camera initially
+    setupCamera();
+
+</script>
+
 </body>
 
 </html>
