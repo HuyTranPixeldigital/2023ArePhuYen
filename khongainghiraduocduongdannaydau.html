@@ -1,57 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Điểm Danh</title>
-	<style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        video {
-            width: 100%;
-            max-width: 500px; /* Bạn có thể thay đổi kích thước tối đa tùy ý */
-            border: 1px solid #ccc;
-        }
-
-        button {
-            margin-top: 20px;
-        }
-    </style>
+    <title>Camera Access and QR Code Reader</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.2.0/dist/jsQR.js"></script>
 </head>
+
 <body>
-    <h1>Camera Demo</h1>
-    <button onclick="startCamera()">Bật Camera</button>
-    <br><br>
-    <video id="video"  autoplay playsinline></video>
 
-    <script>
-        const video = document.getElementById('video');
+<video id="video" width="300" height="200"></video>
+<button id="toggleButton">Toggle Camera</button>
+<div id="output"></div>
 
-        async function startCamera() {
-            try {
-                if (video.srcObject) {
-                    video.srcObject.getTracks().forEach(track => track.stop());
-                }
-                const constraints = { 
-                    video: {
-                        facingMode: 'environment'
-                    } 
-                };
+<script>
+    let video = document.getElementById("video");
+    let toggleButton = document.getElementById("toggleButton");
+    let facingMode = "environment"; // default to rear camera
+    let scannerInterval;
 
-                const stream = await navigator.mediaDevices.getUserMedia(constraints);
-                video.srcObject = stream;
-                video.play();
-            } catch (error) {
-                console.error("Có lỗi xảy ra:", error);
-            }
+    function setupCamera() {
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: facingMode } }).then(function(stream) {
+            video.srcObject = stream;
+            video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+            video.play();
+            scannerInterval = setInterval(scanQR, 1000);
+        });
+    }
+
+    function scanQR() {
+        let canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        let ctx = canvas.getContext("2d");
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        let code = jsQR(imageData.data, canvas.width, canvas.height);
+        if (code) {
+            clearInterval(scannerInterval);  // stop scanning once a QR code is detected
+            document.getElementById("output").textContent = code.data;
+            // You can do more here, e.g., navigating to the URL in the QR code
         }
-    </script>
+    }
+
+    toggleButton.addEventListener("click", function() {
+        if (video.srcObject) {
+            video.srcObject.getTracks().forEach(track => track.stop());
+            video.srcObject = null;
+            clearInterval(scannerInterval);
+        } else {
+            setupCamera();
+        }
+    });
+
+    // Start the camera initially
+    setupCamera();
+
+</script>
+
 </body>
+
 </html>
