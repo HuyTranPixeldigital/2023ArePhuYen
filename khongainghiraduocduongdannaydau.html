@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Truy cập Camera</title>
+</head>
+<body>
+    <h1>Camera Demo</h1>
+    <button onclick="startCamera()">Truy cập Camera</button>
+    <br><br>
+    <video id="video" width="640" height="480"></video>
+
+    <script>
+        const video = document.getElementById('video');
+
+        function startCamera() {
+            // Kiểm tra xem trình duyệt có hỗ trợ getUserMedia không
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+                    video.srcObject = stream;
+                    video.play();
+                }).catch(function(error) {
+                    console.error("Có lỗi xảy ra:", error);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
