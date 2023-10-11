@@ -7,29 +7,44 @@
     <title>Hê Thống Diểm Danh Khóa Bồi Dưỡng Sinh Hoạt</title>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.2.0/dist/jsQR.js"></script>
     <style>
-       #video {
+		body {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+			background-color: #f0f0f0;
+			margin: 0;
+		}
+
+		.scanner-container {
 			position: relative;
-			z-index: 1;
+		}
+
+		#video {
 			transform: scale(3);
 			transform-origin: center center;
 		}
 
 		.scanner-frame {
 			position: absolute;
-			top: 50px; /* Căn chỉnh vị trí khung */
-			left: 50px; /* Căn chỉnh vị trí khung */
+			top: 50%;  
+			left: 50%; 
 			width: 200px;
 			height: 200px;
+			transform: translate(-50%, -50%); /* Dịch chuyển phần tử về giữa */
 			border: 2px solid red;
 			z-index: 2;
 		}
+
     </style>
 </head>
 
 <body>
 
-<video id="video" width="300" height="200"></video>
-<div class="scanner-frame"></div>
+<div class="scanner-container">
+    <video id="video" width="300" height="200"></video>
+    <div class="scanner-frame"></div>
+</div>
 
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 <button id="toggleButton">Bật/Tắt Camera</button>
