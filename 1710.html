@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Access and QR Code Reader</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.2.0/dist/jsQR.js"></script>
+    <style>
+        #video {
+            transform: scale(3);
+            transform-origin: center center;
+        }
+    </style>
+</head>
+
+<body>
+
+<video id="video" width="300" height="200"></video>
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<button id="toggleButton">Toggle Camera</button>
+<div id="notification"></div>
+
+<div id="output"></div>
+
+<script>
+	let lastScannedData = null;
+    let video = document.getElementById("video");
+    let toggleButton = document.getElementById("toggleButton");
+    let facingMode = "environment"; // default to rear camera
+
+    function setupCamera() {
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: facingMode } }).then(function(stream) {
+            video.srcObject = stream;
+            video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+            video.play();
+            startScanning(); // Start scanning once the camera is setup
+        });
+    }
+
+    function scanQR() {
+        let canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        let ctx = canvas.getContext("2d");
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        let code = jsQR(imageData.data, canvas.width, canvas.height);
+        if (code && code.data !== lastScannedData) {
+			lastScannedData = code.data;
+			let codeQr = cose.data.split('/'); // doi là codeQr[2], nam làcodeQr[3]..slice(0, -5)
+			let name = codeQr[2].split('-');
+			let data = {
+				team : codeQr[2].slice(2),
+				name : name[1].slice(0, -5),
+			};
+			const setUser = await fetch('http://171.244.184.44:3000/',{method: 'PUT',body: JSON.stringify(data) });
+            document.getElementById("output").textContent = code.data;	
+			document.getElementById("notification").textContent = 'Cập nhật thành công!';
+			setTimeout(() => {
+				document.getElementById("notification").textContent = '';
+			}, 2000);
+            // You can do more here, e.g., navigating to the URL in the QR code
+        }
+    }
+
+    function startScanning() {
+        setInterval(scanQR, 500); // Scan every 500ms
+    }
+
+    toggleButton.addEventListener("click", function() {
+        if (video.srcObject) {
+            video.srcObject.getTracks().forEach(track => track.stop());
+            video.srcObject = null;
+        } else {
+            setupCamera();
+        }
+    });
+
+    // Start the camera initially
+    setupCamera();
+
+</script>
+
+</body>
+
+</html>
