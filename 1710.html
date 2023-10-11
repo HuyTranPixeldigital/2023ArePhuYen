@@ -57,7 +57,7 @@
 					headers: {
 						'Content-Type': 'application/json'
 					},
-					body: JSON.stringify({ data: lastScannedData })  // Adjust this depending on how your backend expects the data
+					body: JSON.stringify({ data: code.data })  // Adjust this depending on how your backend expects the data
 				});
 
 				if (response.ok) {
