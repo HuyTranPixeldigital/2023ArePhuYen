@@ -61,8 +61,8 @@
 				});
 				if (response.ok) {
 					const responseData = await response.json();
-					if (responseData === true) {
-						alert('Cập nhật thành công! Nhấn OK để diểm danh người mới.');
+					if (responseData.status == "true") {
+						alert('điểm danh ' + responseData.user +'! Nhấn OK để diểm danh người mới.');
 						location.reload();
 					} else {
 						document.getElementById("notification").textContent = 'Lỗi khi cập nhật!';
