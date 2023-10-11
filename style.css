@@ -107,3 +107,73 @@ body {
     text-decoration: none; /* Loại bỏ đường gạch chân */
     color: #fff; /* Đặt màu chữ của liên kết */
 }
+
+/* Styles cho checkbox */
+.checkbox-container {
+    display: inline-block;
+    margin: 5px 10px;
+    position: relative;
+    cursor: pointer;
+}
+
+.checkbox-container input[type="checkbox"] {
+    display: none;
+}
+
+.checkbox-container label {
+    padding-left: 30px;
+    position: relative;
+    font-size: 16px;
+    color: #444;
+    cursor: pointer;
+}
+
+.checkbox-container label::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f093fb;
+    border-radius: 4px;
+    background-color: #fff;
+    transition: all 0.3s;
+}
+
+.checkbox-container input[type="checkbox"]:checked + label::before {
+    background-color: #f093fb;
+    border-color: #f093fb;
+}
+
+.checkbox-container label::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%) scaleX(-1);
+    width: 10px;
+    height: 5px;
+    border-bottom: 2px solid #fff;
+    border-left: 2px solid #fff;
+    transform: rotate(-45deg) translateY(-50%);
+    opacity: 0;
+    transition: all 0.3s;
+}
+
+.checkbox-container input[type="checkbox"]:checked + label::after {
+    opacity: 1;
+}
+
+.checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Chia lưới thành 3 cột */
+    gap: 10px; /* Khoảng cách giữa các hàng/cột */
+    width: 100%;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+}
