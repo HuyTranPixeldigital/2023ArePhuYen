@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camera Access and QR Code Reader</title>
+    <title>Hê Thống Diểm Danh Khóa Bồi Dưỡng Sinh Hoạt</title>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.2.0/dist/jsQR.js"></script>
     <style>
         #video {
@@ -19,12 +19,13 @@
 <video id="video" width="300" height="200"></video>
 
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-<button id="toggleButton">Toggle Camera</button>
+<button id="toggleButton">Bật/Tắt Camera</button>
 <div id="notification"></div>
 
 <div id="output"></div>
 
 <script>
+	let scanning = true;
 	let lastScannedData = null;
     let video = document.getElementById("video");
     let toggleButton = document.getElementById("toggleButton");
@@ -40,6 +41,7 @@
     }
 	
 	async function scanQR() {
+		if(!scanning) return;
 		let canvas = document.createElement("canvas");
 		canvas.width = video.videoWidth;
 		canvas.height = video.videoHeight;
@@ -52,34 +54,52 @@
 
 			// Ensure your backend accepts and handles this data correctly
 			try {
-				const response = await fetch('https://hylecuoicung.com:3000', {
+				const response = await fetch('https://hylecuoicung.com:3000/', {
 					method: 'PUT',
 					headers: {
 						'Content-Type': 'application/json'
 					},
 					body: JSON.stringify({ data: code.data })  // Adjust this depending on how your backend expects the data
 				});
-
 				if (response.ok) {
-					document.getElementById("notification").textContent = 'Cập nhật thành công!';
-					setTimeout(() => {
-						document.getElementById("notification").textContent = '';
-					}, 2000);
+					const responseData = await response.json();
+					if (responseData.status == "true") {
+						alert('điểm danh ' + responseData.user +'! Nhấn OK để diểm danh người mới.');
+						location.reload();
+					}else if(responseData.status == "bdh") {
+						alert('Mày rảnh quá hen. BDH thì diểm danh làm gì');
+						location.reload();
+					}
+					else {
+						document.getElementById("notification").textContent = 'Lỗi khi cập nhật!';
+						setTimeout(() => {
+							document.getElementById("notification").textContent = '';
+						}, 2000);
+					}
 				} else {
 					document.getElementById("notification").textContent = 'Lỗi khi cập nhật!';
 				}
 			} catch (error) {
 				document.getElementById("notification").textContent = 'Lỗi kết nối đến máy chủ!';
 			}
-			document.getElementById("output").textContent = code.data;
+			
+			document.getElementById("output").textContent = code.data;			
 		}
+		requestAnimationFrame(scanQR);
+	}
+	
+	function startScanning() {
+		scanning = true;
+		requestAnimationFrame(scanQR); // Khởi tạo quét đầu tiên
 	}
 
+    //function startScanning() {
+    //    setInterval(scanQR, 300); // Scan every 500ms
+  //  }
 	
-
-    function startScanning() {
-        setInterval(scanQR, 500); // Scan every 500ms
-    }
+	function stopScanning() {
+		scanning = false;
+	}
 
     toggleButton.addEventListener("click", function() {
         if (video.srcObject) {
