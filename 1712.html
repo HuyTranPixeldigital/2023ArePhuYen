@@ -7,16 +7,29 @@
     <title>Hê Thống Diểm Danh Khóa Bồi Dưỡng Sinh Hoạt</title>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.2.0/dist/jsQR.js"></script>
     <style>
-        #video {
-            transform: scale(3);
-            transform-origin: center center;
-        }
+       #video {
+			position: relative;
+			z-index: 1;
+			transform: scale(3);
+			transform-origin: center center;
+		}
+
+		.scanner-frame {
+			position: absolute;
+			top: 50px; /* Căn chỉnh vị trí khung */
+			left: 50px; /* Căn chỉnh vị trí khung */
+			width: 200px;
+			height: 200px;
+			border: 2px solid red;
+			z-index: 2;
+		}
     </style>
 </head>
 
 <body>
 
 <video id="video" width="300" height="200"></video>
+<div class="scanner-frame"></div>
 
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 <button id="toggleButton">Bật/Tắt Camera</button>
@@ -44,7 +57,8 @@
 		canvas.width = video.videoWidth;
 		canvas.height = video.videoHeight;
 		let ctx = canvas.getContext("2d");
-		ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+		ctx.drawImage(video, 50, 50, 200, 200, 0, 0, 200, 200);  // chỉ vẽ phần hình ảnh trong khung
+		//ctx.drawImage(video, 0, 0, canvas.width, canvas.height); //cái này nó vẽ hết khung
 		let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 		let code = jsQR(imageData.data, canvas.width, canvas.height);
 		if (code && code.data !== lastScannedData) {
