@@ -47,7 +47,7 @@
 				let data = await response.text();
 
 				let rows = data.split('\n');
-    			let jsonData = [];
+    			        let jsonData = [];
 
 				let headers = rows[0].split(',');
 				
@@ -65,6 +65,7 @@
 				// Lúc này, jsonData là một mảng các đối tượng có dữ liệu từ tệp CSV
 
 				let user = jsonData.find(p => p.id === userId); // Tìm người dùng có id trùng với id của người dùng hiện tại
+				console.log(user)
 				let diemDanh = user.diemDanh.split(',');
 
 				console.log(user);
