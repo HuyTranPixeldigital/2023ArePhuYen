@@ -3,48 +3,20 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.5">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hê Thống Diểm Danh Khóa Bồi Dưỡng Sinh Hoạt</title>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.2.0/dist/jsQR.js"></script>
     <style>
-		body {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			height: 100vh;
-			background-color: #f0f0f0;
-			margin: 0;
-		}
-
-		.scanner-container {
-			position: relative;
-		}
-
-		#video {
-			transform: scale(3);
-			transform-origin: center center;
-		}
-
-		.scanner-frame {
-			position: absolute;
-			top: 50%;  
-			left: 50%; 
-			width: 200px;
-			height: 200px;
-			transform: translate(-50%, -50%); /* Dịch chuyển phần tử về giữa */
-			border: 2px solid red;
-			z-index: 2;
-		}
-
+        #video {
+            transform: scale(3);
+            transform-origin: center center;
+        }
     </style>
 </head>
 
 <body>
 
-<div class="scanner-container">
-    <video id="video" width="300" height="200"></video>
-    <div class="scanner-frame"></div>
-</div>
+<video id="video" width="300" height="200"></video>
 
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 <button id="toggleButton">Bật/Tắt Camera</button>
@@ -69,11 +41,19 @@
 	
 	async function scanQR() {
 		let canvas = document.createElement("canvas");
-		canvas.width = video.videoWidth;
-		canvas.height = video.videoHeight;
+		let zoomFactor = 3;  // Adjust this value to your needs
+		
+		canvas.width = video.videoWidth / zoomFactor;
+		canvas.height = video.videoHeight / zoomFactor;
 		let ctx = canvas.getContext("2d");
-		ctx.drawImage(video, 50, 50, 200, 200, 0, 0, 200, 200);  // chỉ vẽ phần hình ảnh trong khung
-		//ctx.drawImage(video, 0, 0, canvas.width, canvas.height); //cái này nó vẽ hết khung
+		
+		ctx.drawImage(
+			video,
+			-(video.videoWidth - canvas.width * zoomFactor) / 2,
+			-(video.videoHeight - canvas.height * zoomFactor) / 2,
+			video.videoWidth,
+			video.videoHeight
+		);
 		let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 		let code = jsQR(imageData.data, canvas.width, canvas.height);
 		if (code && code.data !== lastScannedData) {
