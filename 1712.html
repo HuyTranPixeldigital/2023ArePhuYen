@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.5">
     <title>QR Scanner</title>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.3.0/dist/jsQR.js"></script>
 </head>
@@ -12,7 +12,6 @@
 
     <script>
         const videoElement = document.getElementById('video');
-        let scannerInterval;
 
         function startScan() {
             navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
@@ -32,10 +31,7 @@
             const canvas = canvasElement.getContext('2d');
 
             videoElement.addEventListener('play', function() {
-                if(scannerInterval) {
-                    clearInterval(scannerInterval);
-                }
-                scannerInterval = setInterval(() => {
+                setInterval(() => {
                     if (videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
                         canvasElement.height = videoElement.videoHeight;
                         canvasElement.width = videoElement.videoWidth;
@@ -45,21 +41,13 @@
                             inversionAttempts: "dontInvert"
                         });
                         if (code) {
-                            clearInterval(scannerInterval); // Stop scanning
+                            console.log("Found QR code", code.data);
                             videoElement.pause();  // or stop the stream
                             videoElement.srcObject.getTracks().forEach(track => track.stop());
-                            handleQRScanned(code.data);
                         }
                     }
                 }, 300);  // repeat scan every 300ms
             });
-        }
-
-        function handleQRScanned(data) {
-            const continueScan = window.confirm(`Quét xong! Dữ liệu: ${data}\nBạn muốn tiếp tục quét không?`);
-            if(continueScan) {
-                startScan();
-            }
         }
     </script>
 </body>
