@@ -1,137 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hê Thống Diểm Danh Khóa Bồi Dưỡng Sinh Hoạt</title>
-    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.2.0/dist/jsQR.js"></script>
-    <style>
-		body {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			height: 100vh;
-			background-color: #f0f0f0;
-			margin: 0;
-		}
-
-		.scanner-container {
-			position: relative;
-		}
-
-		#video {
-			transform: scale(3);
-			transform-origin: center center;
-		}
-
-		.scanner-frame {
-			position: absolute;
-			top: 50%;  
-			left: 50%; 
-			width: 200px;
-			height: 200px;
-			transform: translate(-50%, -50%); /* Dịch chuyển phần tử về giữa */
-			border: 2px solid red;
-			z-index: 2;
-		}
-
-    </style>
+    <title>QR Scanner</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.3.0/dist/jsQR.js"></script>
 </head>
-
 <body>
+    <video id="video" width="300" height="300" style="display: none;"></video>
+    <button onclick="startScan()">Start Scan</button>
 
-<div class="scanner-container">
-    <video id="video" width="300" height="200"></video>
-    <div class="scanner-frame"></div>
-</div>
+    <script>
+        const videoElement = document.getElementById('video');
+        let scannerInterval;
 
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-<button id="toggleButton">Bật/Tắt Camera</button>
-<div id="notification"></div>
-
-<div id="output"></div>
-
-<script>
-	let lastScannedData = null;
-    let video = document.getElementById("video");
-    let toggleButton = document.getElementById("toggleButton");
-    let facingMode = "environment"; // default to rear camera
-
-    function setupCamera() {
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: facingMode } }).then(function(stream) {
-            video.srcObject = stream;
-            video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
-            video.play();
-            startScanning(); // Start scanning once the camera is setup
-        });
-    }
-	
-	async function scanQR() {
-		let canvas = document.createElement("canvas");
-		canvas.width = video.videoWidth;
-		canvas.height = video.videoHeight;
-		let ctx = canvas.getContext("2d");
-		ctx.drawImage(video, 50, 50, 200, 200, 0, 0, 200, 200);  // chỉ vẽ phần hình ảnh trong khung
-		//ctx.drawImage(video, 0, 0, canvas.width, canvas.height); //cái này nó vẽ hết khung
-		let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-		let code = jsQR(imageData.data, canvas.width, canvas.height);
-		if (code && code.data !== lastScannedData) {
-			lastScannedData = code.data;
-
-			// Ensure your backend accepts and handles this data correctly
-			try {
-				const response = await fetch('https://hylecuoicung.com:3000/', {
-					method: 'PUT',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({ data: code.data })  // Adjust this depending on how your backend expects the data
-				});
-				if (response.ok) {
-					const responseData = await response.json();
-					if (responseData.status == "true") {
-						alert('điểm danh ' + responseData.user +'! Nhấn OK để diểm danh người mới.');
-						location.reload();
-					}else if(responseData.status == "bdh") {
-						alert('Mày rảnh quá hen. BDH thì diểm danh làm gì');
-						location.reload();
-					}
-					else {
-						document.getElementById("notification").textContent = 'Lỗi khi cập nhật!';
-						setTimeout(() => {
-							document.getElementById("notification").textContent = '';
-						}, 2000);
-					}
-				} else {
-					document.getElementById("notification").textContent = 'Lỗi khi cập nhật!';
-				}
-			} catch (error) {
-				document.getElementById("notification").textContent = 'Lỗi kết nối đến máy chủ!';
-			}
-			
-			document.getElementById("output").textContent = code.data;
-		}
-	}
-
-    function startScanning() {
-        setInterval(scanQR, 300); // Scan every 300ms
-    }
-
-    toggleButton.addEventListener("click", function() {
-        if (video.srcObject) {
-            video.srcObject.getTracks().forEach(track => track.stop());
-            video.srcObject = null;
-        } else {
-            setupCamera();
+        function startScan() {
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+                .then(stream => {
+                    videoElement.srcObject = stream;
+                    videoElement.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+                    videoElement.play();
+                    scanQR();
+                })
+                .catch(error => {
+                    console.error('Error accessing media devices.', error);
+                });
         }
-    });
 
-    // Start the camera initially
-    setupCamera();
+        function scanQR() {
+            const canvasElement = document.createElement('canvas');
+            const canvas = canvasElement.getContext('2d');
 
-</script>
+            videoElement.addEventListener('play', function() {
+                if(scannerInterval) {
+                    clearInterval(scannerInterval);
+                }
+                scannerInterval = setInterval(() => {
+                    if (videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
+                        canvasElement.height = videoElement.videoHeight;
+                        canvasElement.width = videoElement.videoWidth;
+                        canvas.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
+                        let imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                        let code = jsQR(imageData.data, imageData.width, imageData.height, {
+                            inversionAttempts: "dontInvert"
+                        });
+                        if (code) {
+                            clearInterval(scannerInterval); // Stop scanning
+                            videoElement.pause();  // or stop the stream
+                            videoElement.srcObject.getTracks().forEach(track => track.stop());
+                            handleQRScanned(code.data);
+                        }
+                    }
+                }, 300);  // repeat scan every 300ms
+            });
+        }
 
+        function handleQRScanned(data) {
+            const continueScan = window.confirm(`Quét xong! Dữ liệu: ${data}\nBạn muốn tiếp tục quét không?`);
+            if(continueScan) {
+                startScan();
+            }
+        }
+    </script>
 </body>
-
 </html>
