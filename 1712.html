@@ -61,10 +61,10 @@
 					const responseData = await response.json();
 					if (responseData.status == "true") {
 						alert('điểm danh ' + responseData.user +'! Nhấn OK để diểm danh người mới.');
-						location.reload();
+						//location.reload();
 					}else if(responseData.status == "bdh") {
 						alert('Mày rảnh quá hen. BDH thì diểm danh làm gì');
-						location.reload();
+						//location.reload();
 					}
 					else {
 						document.getElementById("notification").textContent = 'Lỗi khi cập nhật!';
