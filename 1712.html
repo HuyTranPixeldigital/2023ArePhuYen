@@ -49,7 +49,37 @@
 		let code = jsQR(imageData.data, canvas.width, canvas.height);
 		if (code && code.data !== lastScannedData) {
 			lastScannedData = code.data;
-            // (rest of the function remains unchanged...)
+            try {
+				const response = await fetch('https://hylecuoicung.com:3000/', {
+					method: 'PUT',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({ data: code.data })  // Adjust this depending on how your backend expects the data
+				});
+				if (response.ok) {
+					const responseData = await response.json();
+					if (responseData.status == "true") {
+						alert('điểm danh ' + responseData.user +'! Nhấn OK để diểm danh người mới.');
+						location.reload();
+					}else if(responseData.status == "bdh") {
+						alert('Mày rảnh quá hen. BDH thì diểm danh làm gì');
+						location.reload();
+					}
+					else {
+						document.getElementById("notification").textContent = 'Lỗi khi cập nhật!';
+						setTimeout(() => {
+							document.getElementById("notification").textContent = '';
+						}, 2000);
+					}
+				} else {
+					document.getElementById("notification").textContent = 'Lỗi khi cập nhật!';
+				}
+			} catch (error) {
+				document.getElementById("notification").textContent = 'Lỗi kết nối đến máy chủ!';
+			}
+			
+			document.getElementById("output").textContent = code.data;
 		}
 	}
 
