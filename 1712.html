@@ -30,8 +30,7 @@
         if (result !== lastScannedData) {
             lastScannedData = result;
             document.getElementById("output").textContent = result;
-	    console.log(result);
-	    handleQRData(result.data)
+	    handleQRData(result)
             // TODO: Gửi dữ liệu QR code đã quét đến máy chủ
         }
     };
