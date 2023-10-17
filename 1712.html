@@ -6,29 +6,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hê Thống Diểm Danh Khóa Bồi Dưỡng Sinh Hoạt</title>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.2.0/dist/jsQR.js"></script>
-	<style>
-	    #video {
-	        position: relative;
-	    }
-	    
-	    .qr-overlay {
-	        position: absolute;
-	        top: 50%;
-	        left: 50%;
-	        transform: translate(-50%, -50%);
-	        border: 8px solid rgba(255, 255, 255, 0.8);
-	        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-	        width: 70%; /* Điều chỉnh kích thước nếu cần */
-	        height: 70%; /* Điều chỉnh kích thước nếu cần */
-	        z-index: 1;
-	    }
-	</style>
+<style>
+    #video {
+        position: relative;
+        display: block;
+        width: 100%;
+        max-width: 300px;
+        margin: auto;
+    }
+
+    #frame {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 60%; /* chiều rộng của khung */
+        height: 60%; /* chiều cao của khung */
+        transform: translate(-50%, -50%);
+        border: 2px dashed red; /* màu và kiểu viền cho khung */
+    }
+</style>
+
 </head>
 
 <body>
-
+<div id="frame"></div>
 <video id="video" width="300" height="200"></video>
-<div class="qr-overlay"></div>
 
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 <button id="toggleButton">Bật/Tắt Camera</button>
