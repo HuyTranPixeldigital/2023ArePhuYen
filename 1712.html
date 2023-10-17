@@ -26,11 +26,12 @@
     let worker = new Worker('qrWorker.js');
     worker.onmessage = function(e) {
         let result = e.data;
-
         if (result !== lastScannedData) {
             lastScannedData = result;
             document.getElementById("output").textContent = result;
-	    handleQRData(result)
+	    handleQRData(result.data)
+		console.log(result)
+		console.log(result.data)
             // TODO: Gửi dữ liệu QR code đã quét đến máy chủ
         }
     };
@@ -63,7 +64,7 @@
     }
 
     function startScanning() {
-        setInterval(scanQR, 500); // Scan every 100ms
+        setInterval(scanQR, 100); // Scan every 100ms
     }
 
     toggleButton.addEventListener("click", function() {
@@ -83,7 +84,7 @@ async function handleQRData(data) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ data: data })
+            body: JSON.stringify({ })
         });
 
         if (response.ok) {
