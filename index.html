@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống điểm danh khóa BDSH 2023</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+
+        #scanner-container {
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="scanner-container">
+    <h2>Đợi quét mã...</h2>
+    <input type="text" id="scanner-input" placeholder="Quét mã vào đây" autofocus style="opacity: 0; position: absolute;">
+</div>
+
+<script>
+    const scannerInput = document.getElementById('scanner-input');
+
+    scannerInput.addEventListener('input', async function() {
+        const scannedData = this.value;
+		console.log(scannedData);
+        
+        try {
+			const response = await fetch('https://hylecuoicung.com:3000/', {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ data: scannedData })  // Adjust this depending on how your backend expects the data
+			});
+			
+            const responseData = await response.json();
+			
+			if (responseData.status == "true") {
+				alert('điểm danh ' + responseData.user +'! Nhấn OK để diểm danh người mới.');
+				//location.reload();
+			}else if(responseData.status == "bdh") {
+				alert('Mày rảnh quá hen. BDH thì diểm danh làm gì');
+				//location.reload();
+			}
+			else {
+				document.getElementById("notification").textContent = 'Lỗi khi cập nhật!';
+				setTimeout(() => {
+					document.getElementById("notification").textContent = '';
+				}, 2000);
+			}
+            
+            // Reset input for next scan
+            this.value = '';
+        } catch (error) {
+            console.error('Error sending data to server:', error);
+            alert('Có lỗi xảy ra khi gửi dữ liệu đến máy chủ.');
+        }
+    });
+
+    // Focus the hidden input always to receive scanner input
+    scannerInput.focus();
+    document.body.addEventListener('click', () => {
+        scannerInput.focus();
+    });
+</script>
+
+</body>
+
+</html>
