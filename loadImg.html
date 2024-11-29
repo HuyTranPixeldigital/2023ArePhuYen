@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Drive Thumbnail Slideshow</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+        }
+
+        .folder-list {
+            margin: 20px;
+        }
+
+        .slideshow-container {
+            max-width: 1000px;
+            position: relative;
+            margin: auto;
+        }
+
+        .mySlides {
+            display: none;
+        }
+
+        img {
+            width: 100%;
+            height: auto;
+            cursor: pointer;
+        }
+
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            padding: 16px;
+            margin-top: -22px;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            transition: 0.6s ease;
+            user-select: none;
+        }
+
+        .prev {
+            left: 0;
+            border-radius: 3px 0 0 3px;
+        }
+
+        .next {
+            right: 0;
+            border-radius: 0 3px 3px 0;
+        }
+
+        .prev:hover, .next:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #3498db;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Hide spinner by default */
+        #loadingSpinner {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner"></div>
+
+    <!-- Folder Selection -->
+    <div class="folder-list">
+        <h3><a href="https://drive.google.com/drive/folders/18gQTXQIOVY1QrsKOZeQOBdAuqrWDR2rI" target="_blank" rel="noreferrer">Link Full Sa Mạc</a></h3>
+        <h3>Lựa chọn hình bạn muốn xem hoặc <a href="https://drive.google.com/drive/folders/1xQCE4TYunXf-EfRkiMIsLzepKWkOgSGF" target="_blank" rel="noreferrer">Bấm vào đây </a> để mở trong Google Drive - Ngày Hy Sin - Làm Tông Đồ</h3>
+        <button onclick="loadImagesFromGoogleDrive('1AiExWXhf79Jbrt0qIF6_Nj0DNsrxMfys')">Tiền Sa Mạc</button>
+        <button onclick="loadImagesFromGoogleDrive('1gDbKgwPeIWPQDMVOKfoZNjeK6pDO567n')">Thứ 6 - Ngày Cầu Nguyện</button>
+        <button class="mui-btn mui-btn--raised" onclick="loadImagesFromFolder('1CB24NomG1r3GWGC650KyniKVV_fPjVKo')">Thứ 7 - Ngày Thánh Thể</button>
+        <button class="mui-btn mui-btn--raised" onclick="loadImagesFromFolder('1YkQt1xCsWSUNJt0WkeZYKvJkdX_5YqR0')">Lửa Thiêng Thánh Thể</button>
+        <button class="mui-btn mui-btn--raised" onclick="loadImagesFromFolder('1xQCE4TYunXf-EfRkiMIsLzepKWkOgSGF')">Chúa Nhật - Ngày Làm Tông Đồ</button>
+        <!-- Add more folders as needed -->
+    </div>
+
+    <div class="slideshow-container">
+        <div id="slideshowContent"></div>
+
+        <!-- Next and previous buttons -->
+        <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+        <a class="next" onclick="plusSlides(1)">&#10095;</a>
+    </div>
+
+    <script>
+        const API_KEY = 'AIzaSyBvJic-X8DdTAy1_arZTL_0LH2lZ0iKcGU';
+        let images = [];
+        let slideIndex = 1;
+
+        // Hiển thị loading spinner
+        function showLoading() {
+            document.getElementById('loadingSpinner').style.display = 'block';
+        }
+
+        // Ẩn loading spinner
+        function hideLoading() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+        }
+
+        // Hàm để lấy toàn bộ hình ảnh từ Google Drive
+        async function loadImagesFromGoogleDrive(folderId) {
+            const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${API_KEY}&fields=files(id,name,mimeType)&pageSize=1000`;
+            try {
+                showLoading(); // Hiển thị spinner
+                const response = await fetch(url);
+                const data = await response.json();
+
+                images = data.files
+                    .filter(file => file.mimeType.startsWith('image/'))
+                    .map(file => ({
+                        id: file.id,
+                        thumbnail: `https://drive.google.com/thumbnail?id=${file.id}`,
+                        fullImage: `https://drive.google.com/file/d/${file.id}/view`
+                    }));
+
+                if (images.length > 0) {
+                    createSlideshow();
+                    hideLoading(); // Ẩn spinner sau khi tải xong
+                } else {
+                    alert('No images found in this folder.');
+                    hideLoading();
+                }
+            } catch (error) {
+                console.error('Error fetching images:', error);
+                hideLoading();
+            }
+        }
+
+        // Hàm để tạo slideshow
+        function createSlideshow() {
+            const slideshowContainer = document.getElementById('slideshowContent');
+
+            slideshowContainer.innerHTML = ''; // Reset nội dung
+
+            images.forEach((image, index) => {
+                // Tạo div cho mỗi slide
+                const slideDiv = document.createElement('div');
+                slideDiv.classList.add('mySlides');
+                const imgElement = document.createElement('img');
+                imgElement.src = image.thumbnail;
+
+                // Khi nhấn vào thumbnail, mở tab mới để xem ảnh đầy đủ
+                imgElement.onclick = () => window.open(image.fullImage, '_blank');
+
+                slideDiv.appendChild(imgElement);
+                slideshowContainer.appendChild(slideDiv);
+            });
+
+            showSlides(slideIndex); // Hiển thị slide đầu tiên
+        }
+
+        // Hàm để điều khiển slides
+        function plusSlides(n) {
+            showSlides(slideIndex += n);
+        }
+
+        function showSlides(n) {
+            let i;
+            const slides = document.getElementsByClassName('mySlides');
+            if (n > slides.length) { slideIndex = 1 }
+            if (n < 1) { slideIndex = slides.length }
+            for (i = 0; i < slides.length; i++) {
+                slides[i].style.display = 'none';
+            }
+            slides[slideIndex - 1].style.display = 'block';
+        }
+        document.addEventListener("DOMContentLoaded", function() {
+            const defaultFolderId = '1xQCE4TYunXf-EfRkiMIsLzepKWkOgSGF'; // Folder ID mặc định
+            loadImagesFromGoogleDrive(defaultFolderId); // Tải hình ảnh từ folder mặc định
+        });
+    </script>
+
+</body>
+
+</html>
